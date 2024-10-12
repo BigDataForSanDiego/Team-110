@@ -42,5 +42,5 @@
 
 #### Team Coordinator GitHub Username: `alexziao05`
 
-#### Team Members `Spencer Schmitt (ToucapTheToucan), Alfredo Lozano: `
+#### Team Members `Spencer Schmitt (ToucapTheToucan), Alfredo Lozano (alfredosojr), Alex Huang (alexziao05), Bao Tran (TuilaKem)`
 
