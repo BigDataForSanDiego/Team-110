@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 import json
 
 app = Flask(__name__)
@@ -11,3 +11,16 @@ def get_resources():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+
+posts = []
+
+@app.route('/posts')
+def get_posts():
+    return jsonify(posts)
+
+@app.route('/posts', methods=['POST'])
+def add_post():
+    data = request.json
+    posts.append({"content": data['content']})
+    return jsonify({"status": "success"}), 201
