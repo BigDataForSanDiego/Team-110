@@ -1,0 +1,4 @@
+[
+  {"name": "Water Fountain", "type": "water", "lat": 32.7157, "lon": -117.1611, "notes": "Open 24/7"},
+  {"name": "Shelter A", "type": "sleep", "lat": 32.7167, "lon": -117.1620, "notes": "Limited capacity"}
+]
