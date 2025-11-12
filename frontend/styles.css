@@ -59,3 +59,13 @@ body{
 .resource-popup .popup-actions{margin-top:8px;display:flex;gap:8px;align-items:center}
 .resource-popup .use-btn{padding:6px 10px;border-radius:6px;background:#f97316;color:white;border:none}
 .resource-popup .directions{padding:6px 10px;border-radius:6px;background:var(--accent);color:white;text-decoration:none}
+
+/* Search results */
+.search-form{display:flex;flex-direction:column;gap:8px}
+.search-form input{padding:10px;border-radius:8px;border:1px solid rgba(15,23,42,0.08);background:linear-gradient(180deg, #fff, #fbfdff)}
+.search-results{margin-top:12px}
+.search-result-card{background:#fbfcfd;border:1px solid #d4a574;border-left:4px solid #f97316;padding:12px;border-radius:8px;margin-bottom:8px}
+.search-result-card .result-title{font-weight:600;margin-bottom:6px}
+.search-result-card .result-detail{font-size:13px;color:var(--muted);margin:4px 0}
+.search-result-card .result-actions{margin-top:8px;display:flex;gap:8px}
+.search-result-card .result-actions a{padding:6px 10px;border-radius:6px;background:var(--accent);color:white;text-decoration:none;font-size:12px}
