@@ -13,6 +13,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const resourceMsg = document.getElementById('resourceMsg');
   const centerMe = document.getElementById('centerMe');
 
+  // Search UI
+  const searchForm = document.getElementById('searchForm');
+  const searchQuery = document.getElementById('searchQuery');
+  const searchResults = document.getElementById('searchResults');
+
   if (typeof L === 'undefined') {
     const mapEl = document.getElementById('map');
     if (mapEl) mapEl.innerHTML = '<p style="color: red; padding: 16px;">Map failed to load. Check network or CDN.</p>';
@@ -106,6 +111,41 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!payload.name || !isFinite(payload.lat) || !isFinite(payload.lon)){ resourceMsg.textContent='Name, latitude and longitude are required and must be valid numbers.'; resourceMsg.style.color='var(--danger)'; return; }
     fetch('http://127.0.0.1:5000/resources',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).then(r=>r.json()).then(()=>{ resourceMsg.textContent='Resource pinged — thanks!'; resourceMsg.style.color='inherit'; resName.value=''; resType.value=''; resNotes.value=''; resLat.value=''; resLon.value=''; fetchResources(); }).catch(e=>{ resourceMsg.textContent='Failed to ping resource'; resourceMsg.style.color='var(--danger)'; console.error(e); });
   });
+
+  // Natural language search
+  searchForm && searchForm.addEventListener('submit', e=>{
+    e.preventDefault();
+    if (!navigator.geolocation){ alert('Please enable location to use search'); return; }
+    navigator.geolocation.getCurrentPosition(pos=>{
+      const {latitude, longitude} = pos.coords;
+      const query = searchQuery.value.trim();
+      if (!query) return;
+      fetch('http://127.0.0.1:5000/search', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({query, lat:latitude, lon:longitude})})
+        .then(r=>r.json())
+        .then(data=>{
+          searchResults.innerHTML='';
+          if (data.error || data.message){ searchResults.innerHTML=`<div class="search-result-card"><div class="result-detail">${data.message || data.error}</div></div>`; return; }
+          const res = data.resource;
+          const html=`
+            <div class="search-result-card">
+              <div class="result-title">${escapeHtml(res.name)}</div>
+              <div class="result-detail"><strong>Type:</strong> ${escapeHtml(res.type||'')}</div>
+              <div class="result-detail"><strong>Distance:</strong> ${data.distance_miles} miles away</div>
+              <div class="result-detail"><strong>Address:</strong> ${escapeHtml(data.address)}</div>
+              <div class="result-detail">${escapeHtml(res.notes||'')}</div>
+              <div class="result-actions">
+                <a href="${data.directions_url}" target="_blank" rel="noopener">Get Directions</a>
+              </div>
+            </div>
+          `;
+          searchResults.innerHTML=html;
+          // Center map on result
+          map.setView([res.lat, res.lon], 15);
+        })
+        .catch(err=>{ searchResults.innerHTML='<div class="search-result-card"><div class="result-detail" style="color:var(--danger);">Search failed. Try again.</div></div>'; console.error(err); });
+    }, ()=>{ alert('Location access denied. Please enable location to use search.'); });
+  });
+
 
   // map click fills coords
   map.on('click', function(e){ const lat = e.latlng.lat.toFixed(6); const lon = e.latlng.lng.toFixed(6); if (resLat) resLat.value = lat; if (resLon) resLon.value = lon; });
