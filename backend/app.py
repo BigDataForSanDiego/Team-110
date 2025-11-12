@@ -98,12 +98,19 @@ def search_resources():
         resource_type = 'food'
     elif any(word in query_lower for word in ['shelter', 'sleep', 'bed', 'warm', 'roof', 'place to stay']):
         resource_type = 'shelter'
+    elif any(word in query_lower for word in ['job', 'work', 'employment', 'hiring', 'career']):
+        resource_type = 'job'
+    elif any(word in query_lower for word in ['medical', 'doctor', 'health', 'clinic', 'hospital', 'care']):
+        resource_type = 'medical'
     
     # Find nearest resource
     nearest = models.find_nearest_resource(user_lat, user_lon, resource_type)
     
     if not nearest:
-        return jsonify({'message': 'No resources found matching your request'}), 404
+        if resource_type:
+            return jsonify({'message': f'No {resource_type} resources found nearby. Try searching for water, food, shelter, jobs, or medical services.'}), 404
+        else:
+            return jsonify({'message': 'I didn\'t understand what you\'re looking for. Try asking for: water, food, shelter, jobs, or medical services.'}), 400
     
     # Try to get address via reverse geocoding
     address = "Address unavailable"
