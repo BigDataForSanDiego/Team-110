@@ -28,6 +28,15 @@
 
         <aside class="sidebar">
             <div class="panel">
+                <h2>Ask for Help</h2>
+                <form id="searchForm" class="search-form">
+                    <input id="searchQuery" placeholder="e.g., 'I need water' or 'Where can I eat?'" aria-label="Natural language search" />
+                    <button type="submit" class="btn primary">Find</button>
+                </form>
+                <div id="searchResults" class="search-results" aria-live="polite"></div>
+            </div>
+
+            <div class="panel">
                 <h2>Forum</h2>
                 <form id="postForm" class="post-form">
                     <input id="postInput" placeholder="Share info or ask a question" aria-label="New post" />
