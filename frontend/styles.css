@@ -1,0 +1,61 @@
+:root{
+	--bg:#f7f9fb;
+	--card:#ffffff;
+	--muted:#6b7280;
+	--accent:#0077cc;
+	--accent-600:#0066b3;
+	--danger:#e53935;
+	--radius:10px;
+}
+
+*{box-sizing:border-box}
+body{
+	font-family: 'Inter', -apple-system, system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+	background:var(--bg);
+	color:#0f172a;
+	margin:0;
+	-webkit-font-smoothing:antialiased;
+}
+
+.container{max-width:1100px;margin:0 auto;padding:16px}
+.app-header{background:linear-gradient(90deg, #0ea5e9, #075985);color:white;padding:20px 0}
+.app-header h1{margin:0;font-size:20px;font-weight:600}
+.tagline{margin:6px 0 0;color:rgba(255,255,255,0.9)}
+
+.app{display:grid;grid-template-columns:1fr 420px;gap:16px;padding:18px 16px}
+.map-area{min-height:60vh}
+.map{height:60vh;min-height:300px;border-radius:var(--radius);overflow:hidden;border:1px solid rgba(15,23,42,0.06);width:100%}
+.map-hints{margin-top:8px;color:var(--muted);font-size:13px}
+
+.sidebar{display:flex;flex-direction:column;gap:12px}
+.panel{background:var(--card);padding:12px;border-radius:10px;box-shadow:0 6px 18px rgba(11,15,27,0.06)}
+.panel h2{margin:0 0 8px 0;font-size:16px}
+
+.post-form, .resource-form{display:flex;flex-direction:column;gap:8px}
+.post-form input, .resource-form input{padding:10px;border-radius:8px;border:1px solid rgba(15,23,42,0.08);background:linear-gradient(180deg, #fff, #fbfdff)}
+
+.posts-list{max-height:55vh;overflow:auto;padding-top:8px;display:flex;flex-direction:column;gap:8px}
+.post-card{background:#fbfcfd;border:1px solid rgba(2,6,23,0.03);padding:10px;border-radius:8px}
+.post-card .meta{font-size:12px;color:var(--muted);margin-bottom:6px}
+
+.coords{display:flex;gap:8px}
+.coords input{flex:1}
+.row{display:flex;gap:8px}
+
+.btn{padding:8px 12px;border-radius:8px;border:1px solid rgba(15,23,42,0.06);background:white;cursor:pointer}
+.btn.primary{background:var(--accent);color:white;border-color:var(--accent)}
+.btn:active{transform:translateY(1px)}
+
+.resource-msg{margin-top:8px;color:var(--muted);font-size:13px}
+
+.app-footer{padding:12px 0;color:var(--muted);font-size:13px}
+
+@media (max-width: 900px){
+	.app{grid-template-columns:1fr;}
+	.map{height:50vh}
+}
+
+/* Popup actions */
+.resource-popup .popup-actions{margin-top:8px;display:flex;gap:8px;align-items:center}
+.resource-popup .use-btn{padding:6px 10px;border-radius:6px;background:#f97316;color:white;border:none}
+.resource-popup .directions{padding:6px 10px;border-radius:6px;background:var(--accent);color:white;text-decoration:none}
