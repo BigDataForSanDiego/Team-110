@@ -1,20 +1,73 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Homeless Resource App</title>
-    <link rel="stylesheet" href="styles.css">
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <title>Homeless Resource App</title>
+        <!-- Leaflet CSS (load first so our styles can override) -->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+        <!-- Optional icons / fonts -->
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Homeless Resource App MVP</h1>
-    <div id="map" style="height: 400px;"></div>
-    <div id="forum">
-        <h2>Forum</h2>
-        <div id="posts"></div>
-        <form id="postForm">
-            <input type="text" id="postInput" placeholder="Write a post" />
-            <button type="submit">Submit</button>
-        </form>
-    </div>
+    <header class="app-header">
+        <div class="container">
+            <h1>San Diego Resource & Forum</h1>
+            <p class="tagline">Anonymous messaging and quick pings for water, shelter, food and more.</p>
+        </div>
+    </header>
+
+    <main class="app container">
+        <section class="map-area">
+            <div id="map" class="map"></div>
+            <div id="mapHints" class="map-hints">
+                <small>Tip: click the map to autofill latitude / longitude for a resource.</small>
+            </div>
+        </section>
+
+        <aside class="sidebar">
+            <div class="panel">
+                <h2>Forum</h2>
+                <form id="postForm" class="post-form">
+                    <input id="postInput" placeholder="Share info or ask a question" aria-label="New post" />
+                    <button type="submit" class="btn primary">Post</button>
+                </form>
+                <div id="postsList" class="posts-list" aria-live="polite"></div>
+            </div>
+
+            <div class="panel">
+                <h2>Ping a Resource</h2>
+                <form id="resourceForm" class="resource-form">
+                    <input id="resName" placeholder="Name (required)" />
+                    <select id="resType">
+            <option value="">Select resource type...</option>
+            <option value="water">Water</option>
+            <option value="food">Food</option>
+            <option value="shelter">Shelter</option>
+            <option value="other">Other</option>
+          </select>
+                    <input id="resNotes" placeholder="Notes (optional)" />
+                    <div class="coords">
+                        <input id="resLat" placeholder="Latitude" />
+                        <input id="resLon" placeholder="Longitude" />
+                    </div>
+                    <div class="row">
+                        <button type="submit" class="btn primary">Ping Resource</button>
+                        <button type="button" id="centerMe" class="btn">Center to me</button>
+                    </div>
+                </form>
+                <div id="resourceMsg" class="resource-msg" aria-live="polite"></div>
+            </div>
+        </aside>
+    </main>
+
+    <footer class="app-footer container">
+        <small>Prototype — anonymous by design. Use responsibly. Data stored locally in repo data/ files for this demo.</small>
+    </footer>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="main.js"></script>
 </body>
 </html>
