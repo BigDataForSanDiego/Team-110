@@ -1,5 +1,27 @@
 // Single clean frontend script: adds 'Use' and 'Directions' buttons in resource popups
 document.addEventListener('DOMContentLoaded', () => {
+  // Check authentication
+  const user = JSON.parse(localStorage.getItem('linkedoutUser') || 'null');
+  if (!user) {
+    window.location.href = 'login.html';
+    return;
+  }
+
+  // Display username
+  const userDisplay = document.getElementById('userDisplay');
+  if (userDisplay) {
+    userDisplay.textContent = `Welcome, ${user.username}!`;
+  }
+
+  // Sign out handler
+  const signOutBtn = document.getElementById('signOutBtn');
+  if (signOutBtn) {
+    signOutBtn.addEventListener('click', () => {
+      localStorage.removeItem('linkedoutUser');
+      window.location.href = 'login.html';
+    });
+  }
+
   const postsList = document.getElementById('postsList');
   const postForm = document.getElementById('postForm');
   const postInput = document.getElementById('postInput');
