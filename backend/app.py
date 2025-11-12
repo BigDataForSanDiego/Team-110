@@ -10,6 +10,21 @@ import os
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import models
 
+# Optional: LLM integration (will gracefully degrade if no API key)
+try:
+    import openai
+    LLM_AVAILABLE = True
+except ImportError:
+    LLM_AVAILABLE = False
+
+try:
+    from geopy.geocoders import Nominatim
+    GEOCODER = Nominatim(user_agent="homeless_resource_app")
+    GEOCODING_AVAILABLE = True
+except ImportError:
+    GEOCODER = None
+    GEOCODING_AVAILABLE = False
+
 app = Flask(__name__)
 CORS(app)
 
@@ -49,6 +64,65 @@ def resource_click(resource_id):
     """Record a click on a resource, potentially removing it if clicks exhausted."""
     exists = models.click_resource(resource_id)
     return jsonify({'exists': exists})
+
+
+@app.route('/search', methods=['POST'])
+def search_resources():
+    """
+    LLM-powered natural language search.
+    User asks in natural language (e.g., "I need water near me")
+    Returns the nearest matching resource with an address.
+    """
+    data = request.get_json() or {}
+    query = (data.get('query') or '').strip()
+    user_lat = data.get('lat')
+    user_lon = data.get('lon')
+
+    if not query or user_lat is None or user_lon is None:
+        return jsonify({'error': 'query, lat, and lon are required'}), 400
+
+    try:
+        user_lat = float(user_lat)
+        user_lon = float(user_lon)
+    except (TypeError, ValueError):
+        return jsonify({'error': 'lat and lon must be numbers'}), 400
+
+    # Parse the query using simple heuristics (no LLM required for MVP)
+    query_lower = query.lower()
+    resource_type = None
+    
+    # Simple keyword matching
+    if any(word in query_lower for word in ['water', 'drink', 'thirst', 'fountain']):
+        resource_type = 'water'
+    elif any(word in query_lower for word in ['food', 'eat', 'meal', 'hungry', 'lunch', 'dinner']):
+        resource_type = 'food'
+    elif any(word in query_lower for word in ['shelter', 'sleep', 'bed', 'warm', 'roof', 'place to stay']):
+        resource_type = 'shelter'
+    
+    # Find nearest resource
+    nearest = models.find_nearest_resource(user_lat, user_lon, resource_type)
+    
+    if not nearest:
+        return jsonify({'message': 'No resources found matching your request'}), 404
+    
+    # Try to get address via reverse geocoding
+    address = "Address unavailable"
+    if GEOCODING_AVAILABLE:
+        try:
+            location = GEOCODER.reverse(f"{nearest['lat']}, {nearest['lon']}")
+            address = location.address
+        except Exception as e:
+            print(f"Geocoding error: {e}")
+    
+    response = {
+        'resource': nearest,
+        'address': address,
+        'distance_miles': nearest.get('distance_miles', 'unknown'),
+        'directions_url': f"https://www.google.com/maps/dir/?api=1&destination={nearest['lat']},{nearest['lon']}"
+    }
+    
+    return jsonify(response)
+
 
 
 @app.route('/resources', methods=['POST'])
