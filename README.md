@@ -13,9 +13,9 @@ Karthik Sankaran (karsan377)
 Edward Huang (edward-lemonade)
 
 #### Our hackathon idea in One sentence:
-##### We aim to convert San Diego County's unhoused population into a cohesive community through local forums with an emphasis on resource sharing, mental health support, and guidance for the newly unhoused.
+##### LinkedOut: Connect with resources. We provide a platform for the unhoused community to access critical resources and connect with peers through anonymous messaging, real-time resource discovery, and community support.
 
-<img height="10%" width="50%" alt="HDMA" src="https://github.com/BigDataForSanDiego/Team-110/blob/main/images/vis.jpg?raw=true"> 
+<img height="10%" width="50%" alt="HDMA" src="https://github.com/BigDataForSanDiego/Team-110/blob/main/images/vis.jpg?raw=true">
 
 
 

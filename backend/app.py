@@ -19,7 +19,7 @@ except ImportError:
 
 try:
     from geopy.geocoders import Nominatim
-    GEOCODER = Nominatim(user_agent="homeless_resource_app")
+    GEOCODER = Nominatim(user_agent="linkedout_resource_app")
     GEOCODING_AVAILABLE = True
 except ImportError:
     GEOCODER = None
