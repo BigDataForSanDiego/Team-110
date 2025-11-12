@@ -1,6 +1,7 @@
 from pathlib import Path
 import json
 from threading import Lock
+import math
 
 _lock = Lock()
 
@@ -67,3 +68,49 @@ def click_resource(resource_id: str) -> bool:
             _save('initial_resources.json', resources)
             return True
     return False  # Resource not found
+
+
+def haversine_distance(lat1, lon1, lat2, lon2):
+    """Calculate distance between two coordinates in miles."""
+    R = 3959  # Earth radius in miles
+    phi1, phi2 = math.radians(lat1), math.radians(lat2)
+    delta_lat = math.radians(lat2 - lat1)
+    delta_lon = math.radians(lon2 - lon1)
+    a = math.sin(delta_lat / 2) ** 2 + math.cos(phi1) * math.cos(phi2) * math.sin(delta_lon / 2) ** 2
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    return R * c
+
+
+def find_nearest_resource(user_lat: float, user_lon: float, resource_type: str = None):
+    """
+    Find the nearest resource to the user.
+    If resource_type is provided, filter by type (e.g., 'water', 'food', 'shelter').
+    Returns the resource with its distance in miles.
+    """
+    resources = _load('initial_resources.json')
+    if not resources:
+        return None
+    
+    # Filter by type if specified
+    if resource_type:
+        resources = [r for r in resources if r.get('type', '').lower() == resource_type.lower()]
+    
+    if not resources:
+        return None
+    
+    # Calculate distances and find nearest
+    nearest = None
+    min_distance = float('inf')
+    
+    for r in resources:
+        try:
+            distance = haversine_distance(user_lat, user_lon, r['lat'], r['lon'])
+            if distance < min_distance:
+                min_distance = distance
+                nearest = r
+                nearest['distance_miles'] = round(distance, 2)
+        except (ValueError, KeyError):
+            continue
+    
+    return nearest
+
