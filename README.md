@@ -29,7 +29,7 @@ Edward Huang (edward-lemonade)
 - [ ] Housing and Employment Pathways
 > - Web platforms that connect homeless individuals to affordable housing opportunities, job training programs, or employment resources.
 > - Question: What digital web platforms or systems can help individuals experiencing homelessness navigate the path toward stable housing and employment, including skills training, job placement, and housing referrals? 
-- [ ] Safety and Community Engagement
+- [] Safety and Community Engagement
 > - Solutions to increase personal safety, prevent violence, and foster community support and empathy networks for homeless people.
 > - Question: How might we design technological solutions that improve safety for unhoused individuals, reduce violence, and build empathy and community support through storytelling, social engagement, or civic partnerships?
 - [ ] Data-Driven Policy and User-Centered Resource Planning
