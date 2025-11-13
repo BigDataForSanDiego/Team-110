@@ -102,8 +102,6 @@ def search_resources():
         resource_type = 'job'
     elif any(word in query_lower for word in ['medical', 'doctor', 'health', 'clinic', 'hospital', 'care']):
         resource_type = 'medical'
-    elif any(word in query_lower for word in ['event', 'gathering', 'meetup', 'social', 'community']):
-        resource_type = 'event'
     
     # Find nearest resource
     nearest = models.find_nearest_resource(user_lat, user_lon, resource_type)
