@@ -88,5 +88,15 @@
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="main.js"></script>
+        <script>
+            // Register service worker for offline caching
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('/service-worker.js')
+                        .then(reg => console.log('ServiceWorker registered', reg))
+                        .catch(err => console.warn('ServiceWorker registration failed', err));
+                });
+            }
+        </script>
 </body>
 </html>
