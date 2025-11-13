@@ -22,6 +22,51 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Offline queue indicator and sync
+  const queueIndicator = document.getElementById('queueIndicator');
+
+  async function updateQueueCount(){
+    if (!window.offlineDB) return;
+    try{
+      const list = await window.offlineDB.getAllQueued();
+      const n = (list && list.length) || 0;
+      if (queueIndicator){
+        if (n>0){ queueIndicator.style.display='inline'; queueIndicator.textContent = `Offline: ${n} pending`; }
+        else { queueIndicator.style.display='none'; }
+      }
+    }catch(e){ console.warn('queue count', e); }
+  }
+
+  async function flushQueue(){
+    if (!window.offlineDB) return;
+    try{
+      const list = await window.offlineDB.getAllQueued();
+      for (const item of list){
+        try{
+          const headers = item.headers || {'Content-Type':'application/json'};
+          const res = await fetch(item.url, {method:item.method || 'POST', headers, body: item.body});
+          if (res && (res.status===200 || res.status===201)){
+            await window.offlineDB.dequeue(item.id);
+            // refresh relevant data
+            if (item.url && item.url.includes('/posts')) fetchPosts();
+            if (item.url && item.url.includes('/resources')) fetchResources();
+          }
+        }catch(err){
+          // stop processing if network flaky
+          console.warn('flush item failed', err);
+          break;
+        }
+      }
+    }catch(e){ console.warn('flushQueue', e); }
+    updateQueueCount();
+  }
+
+  // Try to flush when coming online
+  window.addEventListener('online', ()=>{ flushQueue(); updateQueueCount(); });
+  window.addEventListener('offline', ()=>{ updateQueueCount(); });
+  // initialize count
+  updateQueueCount();
+
   const postsList = document.getElementById('postsList');
   const postForm = document.getElementById('postForm');
   const postInput = document.getElementById('postInput');
@@ -126,13 +171,47 @@ document.addEventListener('DOMContentLoaded', () => {
   fetchResources(); fetchPosts(); setInterval(fetchResources,7000); setInterval(fetchPosts,6000);
 
   // post submit
-  postForm.addEventListener('submit', e=>{ e.preventDefault(); const content = postInput.value && postInput.value.trim(); if (!content) return; fetch('http://127.0.0.1:5000/posts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content})}).then(r=>r.json()).then(()=>{ postInput.value=''; fetchPosts(); }).catch(e=>console.error('post create',e)); });
+  postForm.addEventListener('submit', async e=>{
+    e.preventDefault(); const content = postInput.value && postInput.value.trim(); if (!content) return;
+    const payload = {content};
+    try{
+      const r = await fetch('http://127.0.0.1:5000/posts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+      if (r.ok){ postInput.value=''; fetchPosts(); }
+      else { throw new Error('Server error'); }
+    }catch(err){
+      console.warn('post create (offline), enqueueing', err);
+      // enqueue locally
+      if (window.offlineDB){
+        await window.offlineDB.enqueueRequest({url:'http://127.0.0.1:5000/posts', method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)});
+        if (postInput) postInput.value = '';
+        updateQueueCount();
+      }
+      else {
+        console.error('post create', err);
+      }
+    }
+  });
 
   // resource submit
-  resourceForm.addEventListener('submit', e=>{
+  resourceForm.addEventListener('submit', async e=>{
     e.preventDefault(); const payload = { name:(resName.value||'').trim(), type:(resType.value||'').trim(), notes:(resNotes.value||'').trim(), lat:parseFloat(resLat.value), lon:parseFloat(resLon.value) };
     if (!payload.name || !isFinite(payload.lat) || !isFinite(payload.lon)){ resourceMsg.textContent='Name, latitude and longitude are required and must be valid numbers.'; resourceMsg.style.color='var(--danger)'; return; }
-    fetch('http://127.0.0.1:5000/resources',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).then(r=>r.json()).then(()=>{ resourceMsg.textContent='Resource pinged — thanks!'; resourceMsg.style.color='inherit'; resName.value=''; resType.value=''; resNotes.value=''; resLat.value=''; resLon.value=''; fetchResources(); }).catch(e=>{ resourceMsg.textContent='Failed to ping resource'; resourceMsg.style.color='var(--danger)'; console.error(e); });
+    try{
+      const r = await fetch('http://127.0.0.1:5000/resources',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+      if (r.ok){ resourceMsg.textContent='Resource pinged — thanks!'; resourceMsg.style.color='inherit'; resName.value=''; resType.value=''; resNotes.value=''; resLat.value=''; resLon.value=''; fetchResources(); }
+      else { throw new Error('Server error'); }
+    }catch(err){
+      console.warn('resource create (offline), enqueueing', err);
+      resourceMsg.textContent='Offline — saved locally and will sync when online'; resourceMsg.style.color='var(--muted)';
+      if (window.offlineDB){
+        await window.offlineDB.enqueueRequest({url:'http://127.0.0.1:5000/resources', method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)});
+        resName.value=''; resType.value=''; resNotes.value=''; resLat.value=''; resLon.value='';
+        updateQueueCount();
+      }
+      else {
+        console.error('resource create', err);
+      }
+    }
   });
 
   // Natural language search

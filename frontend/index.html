@@ -20,6 +20,7 @@
                 </div>
                 <div class="header-user">
                     <span id="userDisplay">Welcome!</span>
+                    <span id="queueIndicator" style="font-size:13px;color:rgba(255,255,255,0.9);margin-right:8px;display:none">Offline: 0 pending</span>
                     <button id="signOutBtn" class="btn secondary">Sign Out</button>
                 </div>
             </div>
@@ -85,18 +86,20 @@
         <small>LinkedOut — A resource connection platform for the San Diego community.</small>
     </footer>
 
+    <!-- Offline DB helper (IndexedDB queue) -->
+    <script src="offline-db.js"></script>
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="main.js"></script>
-        <script>
-            // Register service worker for offline caching
-            if ('serviceWorker' in navigator) {
-                window.addEventListener('load', () => {
-                    navigator.serviceWorker.register('/service-worker.js')
-                        .then(reg => console.log('ServiceWorker registered', reg))
-                        .catch(err => console.warn('ServiceWorker registration failed', err));
-                });
-            }
-        </script>
+            <script>
+                // Register service worker for offline caching
+                if ('serviceWorker' in navigator) {
+                    window.addEventListener('load', () => {
+                        navigator.serviceWorker.register('/service-worker.js')
+                            .then(reg => console.log('ServiceWorker registered', reg))
+                            .catch(err => console.warn('ServiceWorker registration failed', err));
+                    });
+                }
+            </script>
 </body>
 </html>
