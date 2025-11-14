@@ -8,7 +8,106 @@
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
         <!-- Optional icons / fonts -->
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="styles.css">
+        <style>
+:root{
+	--bg:#f7f9fb;
+	--card:#ffffff;
+	--muted:#6b7280;
+	--accent:#0077cc;
+	--accent-600:#0066b3;
+	--danger:#e53935;
+	--radius:10px;
+}
+
+*{box-sizing:border-box}
+body{
+	font-family: 'Inter', -apple-system, system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+	background:var(--bg);
+	color:#0f172a;
+	margin:0;
+	-webkit-font-smoothing:antialiased;
+}
+
+.container{max-width:1400px;margin:0 auto;padding:16px}
+.app-header{background:linear-gradient(90deg, #6366f1, #4f46e5);color:white;padding:20px 0}
+.header-content{display:flex;justify-content:space-between;align-items:center}
+.app-header h1{margin:0;font-size:20px;font-weight:600}
+.tagline{margin:6px 0 0;color:rgba(255,255,255,0.9);font-size:14px}
+.header-user{display:flex;align-items:center;gap:12px;font-size:14px}
+.header-user #userDisplay{color:rgba(255,255,255,0.9)}
+.header-user .btn{padding:8px 14px;font-size:13px}
+
+/* Main layout: map and forum side by side */
+.main-content{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:18px 16px}
+
+/* Map section */
+.map-section{display:flex;flex-direction:column;gap:12px}
+.map{height:70vh;min-height:400px;border-radius:var(--radius);overflow:hidden;border:1px solid rgba(15,23,42,0.06);width:100%;box-shadow:0 6px 18px rgba(11,15,27,0.08)}
+.map-hints{color:var(--muted);font-size:13px;padding:0 4px}
+
+/* Forum section */
+.forum-section{display:flex;flex-direction:column;gap:12px}
+.forum-panel{background:var(--card);padding:16px;border-radius:10px;box-shadow:0 6px 18px rgba(11,15,27,0.08);height:70vh;display:flex;flex-direction:column}
+.forum-panel h2{margin:0 0 12px 0;font-size:18px;font-weight:600}
+
+.post-form{display:flex;gap:8px;margin-bottom:12px;flex-shrink:0}
+.post-form input{padding:10px;border-radius:8px;border:1px solid rgba(15,23,42,0.08);background:linear-gradient(180deg, #fff, #fbfdff);flex:1}
+.post-form button{padding:10px 16px}
+
+.posts-list{flex:1;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;gap:8px;padding-right:4px}
+.post-card{background:#fbfcfd;border:1px solid rgba(2,6,23,0.03);padding:12px;border-radius:8px;flex-shrink:0}
+.post-card .meta{font-size:12px;color:var(--muted);margin-bottom:6px}
+
+/* Auxiliary sections */
+.auxiliary-section{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:0 16px 18px 16px}
+.panel{background:var(--card);padding:14px;border-radius:10px;box-shadow:0 4px 12px rgba(11,15,27,0.06)}
+.panel h2{margin:0 0 10px 0;font-size:16px;font-weight:600;color:#1e293b}
+
+/* Search form */
+.search-form{display:flex;flex-direction:column;gap:8px}
+.search-form input{padding:10px;border-radius:8px;border:1px solid rgba(15,23,42,0.08);background:linear-gradient(180deg, #fff, #fbfdff)}
+.search-results{margin-top:12px;max-height:200px;overflow-y:auto}
+.search-result-card{background:#fbfcfd;border:1px solid #d4a574;border-left:4px solid #f97316;padding:12px;border-radius:8px;margin-bottom:8px}
+.search-result-card .result-title{font-weight:600;margin-bottom:6px}
+.search-result-card .result-detail{font-size:13px;color:var(--muted);margin:4px 0}
+.search-result-card .result-actions{margin-top:8px;display:flex;gap:8px}
+.search-result-card .result-actions a{padding:6px 10px;border-radius:6px;background:var(--accent);color:white;text-decoration:none;font-size:12px}
+
+/* Resource form */
+.resource-form{display:flex;flex-direction:column;gap:8px}
+.resource-form input, .resource-form select{padding:10px;border-radius:8px;border:1px solid rgba(15,23,42,0.08);background:linear-gradient(180deg, #fff, #fbfdff)}
+.coords{display:flex;gap:8px}
+.coords input{flex:1}
+.row{display:flex;gap:8px}
+.resource-msg{margin-top:8px;color:var(--muted);font-size:13px}
+
+/* Buttons */
+.btn{padding:8px 12px;border-radius:8px;border:1px solid rgba(15,23,42,0.06);background:white;cursor:pointer;font-size:14px;font-weight:500;transition:all 0.2s}
+.btn.primary{background:var(--accent);color:white;border-color:var(--accent)}
+.btn.secondary{background:#f1f5f9;color:#334155;border-color:#e2e8f0}
+.btn:hover{transform:translateY(-1px);box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+.btn:active{transform:translateY(0)}
+
+/* Popup actions */
+.resource-popup .popup-actions{margin-top:8px;display:flex;gap:8px;align-items:center}
+.resource-popup .use-btn{padding:6px 10px;border-radius:6px;background:#f97316;color:white;border:none;cursor:pointer}
+.resource-popup .directions{padding:6px 10px;border-radius:6px;background:var(--accent);color:white;text-decoration:none}
+
+.app-footer{padding:12px 0;color:var(--muted);font-size:13px;text-align:center}
+
+/* Responsive */
+@media (max-width: 1100px){
+	.main-content{grid-template-columns:1fr;}
+	.forum-panel{height:50vh}
+	.map{height:50vh}
+	.auxiliary-section{grid-template-columns:1fr}
+}
+
+@media (max-width: 600px){
+	.header-content{flex-direction:column;gap:12px;align-items:flex-start}
+	.tagline{font-size:12px}
+}
+        </style>
 </head>
 <body>
     <header class="app-header">
@@ -26,60 +125,68 @@
         </div>
     </header>
 
-    <main class="app container">
-        <section class="map-area">
+    <!-- Main Content: Map and Forum Side by Side -->
+    <div class="main-content container">
+        <!-- Map Section -->
+        <section class="map-section">
             <div id="map" class="map"></div>
             <div id="mapHints" class="map-hints">
-                <small>Tip: click the map to autofill latitude / longitude for a resource.</small>
+                <small>Tip: Click the map to autofill coordinates when marking a resource</small>
             </div>
         </section>
 
-        <aside class="sidebar">
-            <div class="panel">
-                <h2>Ask for Help</h2>
-                <form id="searchForm" class="search-form">
-                    <input id="searchQuery" placeholder="e.g., 'I need water' or 'Where can I eat?'" aria-label="Natural language search" />
-                    <button type="submit" class="btn primary">Find</button>
-                </form>
-                <div id="searchResults" class="search-results" aria-live="polite"></div>
-            </div>
-
-            <div class="panel">
-                <h2>Ping a Resource</h2>
-                <form id="resourceForm" class="resource-form">
-                    <input id="resName" placeholder="Name (required)" />
-                    <select id="resType">
-            <option value="">Select resource type...</option>
-            <option value="water">Water</option>
-            <option value="food">Food</option>
-            <option value="shelter">Shelter</option>
-            <option value="job">Jobs</option>
-            <option value="medical">Medical</option>
-            <option value="other">Other</option>
-          </select>
-                    <input id="resNotes" placeholder="Notes (optional)" />
-                    <div class="coords">
-                        <input id="resLat" placeholder="Latitude" />
-                        <input id="resLon" placeholder="Longitude" />
-                    </div>
-                    <div class="row">
-                        <button type="submit" class="btn primary">Ping Resource</button>
-                        <button type="button" id="centerMe" class="btn">Center to me</button>
-                    </div>
-                </form>
-                <div id="resourceMsg" class="resource-msg" aria-live="polite"></div>
-            </div>
-
-            <div class="panel">
-                <h2>Forum</h2>
+        <!-- Forum Section -->
+        <section class="forum-section">
+            <div class="forum-panel">
+                <h2>Community Forum</h2>
                 <form id="postForm" class="post-form">
-                    <input id="postInput" placeholder="Share info or ask a question" aria-label="New post" />
+                    <input id="postInput" placeholder="Share info or ask a question..." aria-label="New post" />
                     <button type="submit" class="btn primary">Post</button>
                 </form>
                 <div id="postsList" class="posts-list" aria-live="polite"></div>
             </div>
-        </aside>
-    </main>
+        </section>
+    </div>
+
+    <!-- Auxiliary Section: Search and Mark Resource -->
+    <div class="auxiliary-section container">
+        <!-- Ask for Help -->
+        <div class="panel">
+            <h2>Locate Nearby Resources</h2>
+            <form id="searchForm" class="search-form">
+                <input id="searchQuery" placeholder="e.g., 'I need water' or 'Where can I eat?'" aria-label="Natural language search" />
+                <button type="submit" class="btn primary">Find Resources</button>
+            </form>
+            <div id="searchResults" class="search-results" aria-live="polite"></div>
+        </div>
+
+        <!-- Mark a Resource -->
+        <div class="panel">
+            <h2></h2>Mark a Resource</h2>
+            <form id="resourceForm" class="resource-form">
+                <input id="resName" placeholder="Resource name (required)" />
+                <select id="resType">
+                    <option value="">Select type...</option>
+                    <option value="water">Water</option>
+                    <option value="food">Food</option>
+                    <option value="shelter">Shelter</option>
+                    <option value="job">Jobs</option>
+                    <option value="medical">Medical</option>
+                    <option value="other">Other</option>
+                </select>
+                <input id="resNotes" placeholder="Notes (optional)" />
+                <div class="coords">
+                    <input id="resLat" placeholder="Latitude" />
+                    <input id="resLon" placeholder="Longitude" />
+                </div>
+                <div class="row">
+                    <button type="submit" class="btn primary">Mark Resource</button>
+                    <button type="button" id="centerMe" class="btn">Center Map</button>
+                </div>
+            </form>
+            <div id="resourceMsg" class="resource-msg" aria-live="polite"></div>
+        </div>
+    </div>
 
     <footer class="app-footer container">
         <small>LinkedOut — A resource connection platform for the San Diego community.</small>
@@ -88,15 +195,15 @@
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="main.js"></script>
-        <script>
-            // Register service worker for offline caching
-            if ('serviceWorker' in navigator) {
-                window.addEventListener('load', () => {
-                    navigator.serviceWorker.register('/service-worker.js')
-                        .then(reg => console.log('ServiceWorker registered', reg))
-                        .catch(err => console.warn('ServiceWorker registration failed', err));
-                });
-            }
-        </script>
+    <script>
+        // Register service worker for offline caching
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(reg => console.log('ServiceWorker registered', reg))
+                    .catch(err => console.warn('ServiceWorker registration failed', err));
+            });
+        }
+    </script>
 </body>
 </html>
