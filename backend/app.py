@@ -44,11 +44,14 @@ def posts_list():
 def posts_create():
     data = request.get_json() or {}
     content = data.get('content', '').strip()
+    username = data.get('username', 'Anonymous').strip()  # Get username from request
+    
     if not content:
         return jsonify({'error': 'content is required'}), 400
 
     post = {
         'content': content,
+        'username': username,  # Store username with post
         'created_at': datetime.utcnow().isoformat() + 'Z'
     }
     models.add_post(post)

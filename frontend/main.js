@@ -72,16 +72,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function renderPosts(items){
     postsList.innerHTML = '';
-    if (!items || items.length === 0){ postsList.innerHTML = '<div class="post-card">No posts yet — be the first to share.</div>'; return; }
+    if (!items || items.length === 0){ 
+      postsList.innerHTML = '<div class="post-card">No posts yet — be the first to share.</div>'; 
+      return; 
+    }
     items.slice().reverse().forEach(p=>{
-      const card = document.createElement('div'); card.className='post-card';
-      const meta = document.createElement('div'); meta.className='meta'; meta.textContent = p.created_at || '';
-      const content = document.createElement('div'); content.textContent = p.content || '';
-      card.appendChild(meta); card.appendChild(content); postsList.appendChild(card);
+      const card = document.createElement('div'); 
+      card.className='post-card';
+      
+      const meta = document.createElement('div'); 
+      meta.className='meta'; 
+      // Display username and timestamp
+      const username = p.username || 'Anonymous';
+      const timestamp = p.created_at || '';
+      meta.textContent = `${username} • ${timestamp}`;
+      
+      const content = document.createElement('div'); 
+      content.textContent = p.content || '';
+      
+      card.appendChild(meta); 
+      card.appendChild(content); 
+      postsList.appendChild(card);
     });
   }
 
-  function fetchPosts(){ fetch('http://127.0.0.1:5000/posts').then(r=>r.json()).then(renderPosts).catch(e=>console.error('posts fetch',e)); }
+  function fetchPosts(){ 
+    fetch('http://127.0.0.1:5000/posts')
+      .then(r=>r.json())
+      .then(renderPosts)
+      .catch(e=>console.error('posts fetch',e)); 
+  }
 
   function fetchResources(){
     fetch('http://127.0.0.1:5000/resources').then(r=>r.json()).then(data=>{
@@ -125,14 +145,36 @@ document.addEventListener('DOMContentLoaded', () => {
   // initial load and polling
   fetchResources(); fetchPosts(); setInterval(fetchResources,7000); setInterval(fetchPosts,6000);
 
-  // post submit
-  postForm.addEventListener('submit', e=>{ e.preventDefault(); const content = postInput.value && postInput.value.trim(); if (!content) return; fetch('http://127.0.0.1:5000/posts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content})}).then(r=>r.json()).then(()=>{ postInput.value=''; fetchPosts(); }).catch(e=>console.error('post create',e)); });
+  // post submit - now includes username
+  postForm.addEventListener('submit', e=>{ 
+    e.preventDefault(); 
+    const content = postInput.value && postInput.value.trim(); 
+    if (!content) return; 
+    
+    // Include username from localStorage
+    const payload = {
+      content: content,
+      username: user.username
+    };
+    
+    fetch('http://127.0.0.1:5000/posts',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(payload)
+    })
+    .then(r=>r.json())
+    .then(()=>{ 
+      postInput.value=''; 
+      fetchPosts(); 
+    })
+    .catch(e=>console.error('post create',e)); 
+  });
 
   // resource submit
   resourceForm.addEventListener('submit', e=>{
     e.preventDefault(); const payload = { name:(resName.value||'').trim(), type:(resType.value||'').trim(), notes:(resNotes.value||'').trim(), lat:parseFloat(resLat.value), lon:parseFloat(resLon.value) };
     if (!payload.name || !isFinite(payload.lat) || !isFinite(payload.lon)){ resourceMsg.textContent='Name, latitude and longitude are required and must be valid numbers.'; resourceMsg.style.color='var(--danger)'; return; }
-    fetch('http://127.0.0.1:5000/resources',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).then(r=>r.json()).then(()=>{ resourceMsg.textContent='Resource pinged — thanks!'; resourceMsg.style.color='inherit'; resName.value=''; resType.value=''; resNotes.value=''; resLat.value=''; resLon.value=''; fetchResources(); }).catch(e=>{ resourceMsg.textContent='Failed to ping resource'; resourceMsg.style.color='var(--danger)'; console.error(e); });
+    fetch('http://127.0.0.1:5000/resources',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).then(r=>r.json()).then(()=>{ resourceMsg.textContent='Resource marked — thanks!'; resourceMsg.style.color='inherit'; resName.value=''; resType.value=''; resNotes.value=''; resLat.value=''; resLon.value=''; fetchResources(); }).catch(e=>{ resourceMsg.textContent='Failed to mark resource'; resourceMsg.style.color='var(--danger)'; console.error(e); });
   });
 
   // Natural language search

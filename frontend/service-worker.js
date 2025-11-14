@@ -5,14 +5,23 @@ const STATIC_ASSETS = [
   '/index.html',
   '/login.html',
   '/styles.css',
-  '/main.js',
-  '/favicon.ico'
+  '/main.js'
+  // Removed /favicon.ico since it doesn't exist
 ];
 
 self.addEventListener('install', (event) => {
   console.log('[SW] Install');
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(STATIC_ASSETS.filter(Boolean))).then(() => self.skipWaiting())
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        // Add assets one by one with error handling
+        return Promise.allSettled(
+          STATIC_ASSETS.map(url => 
+            cache.add(url).catch(err => console.warn(`Failed to cache ${url}:`, err))
+          )
+        );
+      })
+      .then(() => self.skipWaiting())
   );
 });
 
