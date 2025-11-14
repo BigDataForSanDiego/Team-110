@@ -117,25 +117,75 @@ document.addEventListener('DOMContentLoaded', () => {
             <div>${escapeHtml(r.notes||'')}</div>
             <div><small>${clicks} clicks remaining</small></div>
             <div class="popup-actions">
-              ${r.id?`<button class="btn use-btn" data-id="${escapeHtml(r.id)}">Use</button>`:''}
               <a class="btn directions" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination=${r.lat},${r.lon}">Directions</a>
+              <button class="btn print-btn">Print Directions</button>
             </div>
           </div>
         `;
         m.bindPopup(popupHtml);
+        
+        // Decrement clicks when marker is clicked
+        m.on('click', function(){
+          if (r.id) {
+            fetch(`http://127.0.0.1:5000/resources/${r.id}/click`, {method:'POST'})
+              .then(res=>res.json())
+              .then(resp=>{ 
+                if (!resp.exists){ 
+                  resourcesLayer.removeLayer(m); 
+                } else { 
+                  fetchResources(); 
+                } 
+              })
+              .catch(err=>console.error('click error',err));
+          }
+        });
+        
         m.on('popupopen', function(e){
-          const popupNode = e.popup.getElement(); if (!popupNode) return;
-          const useBtn = popupNode.querySelector('.use-btn');
-          if (useBtn){
-            const handler = function(){
-              const id = this.getAttribute('data-id'); if (!id) return;
-              fetch(`http://127.0.0.1:5000/resources/${id}/click`, {method:'POST'})
-                .then(r=>r.json()).then(resp=>{ if (!resp.exists){ resourcesLayer.removeLayer(m); } else { fetchResources(); } })
-                .catch(err=>console.error('click error',err));
-            };
-            // attach once
-            useBtn.removeEventListener('click', handler);
-            useBtn.addEventListener('click', handler);
+          const popupNode = e.popup.getElement(); 
+          if (!popupNode) return;
+          
+          const printBtn = popupNode.querySelector('.print-btn');
+          if (printBtn){
+            printBtn.addEventListener('click', function(){
+              // Create printable directions content
+              const printContent = `
+                <html>
+                <head>
+                  <title>Directions to ${escapeHtml(r.name)}</title>
+                  <style>
+                    body { font-family: Arial, sans-serif; padding: 20px; }
+                    h1 { color: #333; }
+                    .info { margin: 10px 0; }
+                    .coordinates { background: #f5f5f5; padding: 10px; border-radius: 5px; }
+                  </style>
+                </head>
+                <body>
+                  <h1>Directions to ${escapeHtml(r.name)}</h1>
+                  <div class="info"><strong>Type:</strong> ${escapeHtml(r.type||'')}</div>
+                  <div class="info"><strong>Notes:</strong> ${escapeHtml(r.notes||'N/A')}</div>
+                  <div class="coordinates">
+                    <strong>Coordinates:</strong><br>
+                    Latitude: ${r.lat}<br>
+                    Longitude: ${r.lon}
+                  </div>
+                  <div class="info">
+                    <strong>Google Maps Link:</strong><br>
+                    <a href="https://www.google.com/maps/dir/?api=1&destination=${r.lat},${r.lon}">
+                      Open in Google Maps
+                    </a>
+                  </div>
+                </body>
+                </html>
+              `;
+              
+              const printWindow = window.open('', '_blank');
+              printWindow.document.write(printContent);
+              printWindow.document.close();
+              printWindow.focus();
+              setTimeout(() => {
+                printWindow.print();
+              }, 250);
+            });
           }
         });
       });
@@ -151,10 +201,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const content = postInput.value && postInput.value.trim(); 
     if (!content) return; 
     
+    // Get fresh user data from localStorage
+    const currentUser = JSON.parse(localStorage.getItem('linkedoutUser') || 'null');
+    const username = currentUser?.username || 'Anonymous';
+    
+    console.log('Submitting post with username:', username); // Debug log
+    
     // Include username from localStorage
     const payload = {
       content: content,
-      username: user.username
+      username: username
     };
     
     fetch('http://127.0.0.1:5000/posts',{
@@ -163,7 +219,8 @@ document.addEventListener('DOMContentLoaded', () => {
       body:JSON.stringify(payload)
     })
     .then(r=>r.json())
-    .then(()=>{ 
+    .then((data)=>{ 
+      console.log('Post created:', data); // Debug log
       postInput.value=''; 
       fetchPosts(); 
     })

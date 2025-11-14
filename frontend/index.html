@@ -10,7 +10,7 @@
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
         <style>
 :root{
-	--bg:#f7f9fb;
+	--bg:#c7e0ef;   /* 🔵 darker blue */
 	--card:#ffffff;
 	--muted:#6b7280;
 	--accent:#0077cc;
@@ -45,10 +45,11 @@ body{
 	width: 100%;
 }
 .app-header{
-	background:linear-gradient(90deg, #6366f1, #4f46e5);
-	color:white;
+	background:white;
+	color:#0f172a;
 	padding:20px 0;
 	width: 100%;
+	box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 .header-content{
 	display:flex;
@@ -64,6 +65,8 @@ body{
 .header-logo{
 	height:50px;
 	width:auto;
+	object-fit:contain;
+	max-width:200px;
 }
 .app-header h1{
 	margin:0;
@@ -72,11 +75,11 @@ body{
 }
 .tagline{
 	margin:0;
-	color:rgba(255,255,255,0.9);
+	color:#6b7280;
 	font-size:14px;
 }
 .header-user{display:flex;align-items:center;gap:12px;font-size:14px}
-.header-user #userDisplay{color:rgba(255,255,255,0.9)}
+.header-user #userDisplay{color:#0f172a}
 .header-user .btn{padding:8px 14px;font-size:13px}
 
 /* Main layout: map and forum side by side */
@@ -183,8 +186,8 @@ body{
 
 /* Popup actions */
 .resource-popup .popup-actions{margin-top:8px;display:flex;gap:8px;align-items:center}
-.resource-popup .use-btn{padding:6px 10px;border-radius:6px;background:#f97316;color:white;border:none;cursor:pointer}
-.resource-popup .directions{padding:6px 10px;border-radius:6px;background:var(--accent);color:white;text-decoration:none}
+.resource-popup .directions{padding:6px 10px;border-radius:6px;background:var(--accent);color:white;text-decoration:none;font-size:13px}
+.resource-popup .print-btn{padding:6px 10px;border-radius:6px;background:#10b981;color:white;border:none;cursor:pointer;font-size:13px}
 
 .app-footer{padding:12px 0;color:var(--muted);font-size:13px;text-align:center}
 
