@@ -47,6 +47,16 @@
         .login-header {
             text-align: center;
             margin-bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .login-logo {
+            height: 50px;
+            width: auto;
+            margin-bottom: 16px;
+            display: block;
         }
 
         .login-header h1 {
@@ -57,6 +67,7 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            display: none; /* Hide text since we're using logo */
         }
 
         .login-header p {
@@ -206,7 +217,7 @@
     <div class="login-container">
         <div class="login-card">
             <div class="login-header">
-                <h1>LinkedOut</h1>
+                <img src="logo.png" alt="LinkedOut Logo" class="login-logo" />
                 <p>Connect with resources. Find help in your community.</p>
             </div>
 
@@ -214,7 +225,7 @@
 
             <form id="loginForm">
                 <div class="anonymous-notice">
-                    💡 <strong>Tip:</strong> Use any name/email. No personal data is collected. Your privacy is protected.
+                    <strong>Tip:</strong> Use any name/email. No personal data is collected. Your privacy is protected.
                 </div>
 
                 <div class="form-group">
@@ -242,16 +253,35 @@
     </div>
 
     <script>
+        console.log('Login page loaded');
+        
         const form = document.getElementById('loginForm');
         const messageDiv = document.getElementById('message');
         const usernameInput = document.getElementById('username');
 
+        // Check if already logged in
+        window.addEventListener('load', () => {
+            console.log('Checking for existing user...');
+            const existingUser = localStorage.getItem('linkedoutUser');
+            console.log('Existing user data:', existingUser);
+            
+            if (existingUser) {
+                console.log('User already logged in, redirecting...');
+                window.location.href = 'index.html';
+            }
+        });
+
         form.addEventListener('submit', (e) => {
             e.preventDefault();
+            console.log('Form submitted');
 
             const username = usernameInput.value.trim();
             const email = document.getElementById('email').value.trim();
             const agreed = document.getElementById('agreeTerms').checked;
+
+            console.log('Username:', username);
+            console.log('Email:', email);
+            console.log('Agreed:', agreed);
 
             if (!username) {
                 showMessage('Please enter a username', 'error');
@@ -271,15 +301,30 @@
                 sessionId: 'sess_' + Math.random().toString(36).substr(2, 9)
             };
 
-            localStorage.setItem('linkedoutUser', JSON.stringify(user));
-            showMessage('Welcome to LinkedOut! Redirecting...', 'success');
+            console.log('Saving user to localStorage:', user);
+            
+            try {
+                localStorage.setItem('linkedoutUser', JSON.stringify(user));
+                console.log('User saved successfully');
+                
+                // Verify it was saved
+                const saved = localStorage.getItem('linkedoutUser');
+                console.log('Verification - saved data:', saved);
+                
+                showMessage('Welcome to LinkedOut! Redirecting...', 'success');
 
-            setTimeout(() => {
-                window.location.href = 'index.html';
-            }, 1500);
+                setTimeout(() => {
+                    console.log('Redirecting to index.html');
+                    window.location.href = 'index.html';
+                }, 1500);
+            } catch (error) {
+                console.error('Error saving to localStorage:', error);
+                showMessage('Error saving login. Please try again.', 'error');
+            }
         });
 
         function showMessage(text, type) {
+            console.log('Showing message:', text, type);
             messageDiv.textContent = text;
             messageDiv.className = 'message ' + type;
             setTimeout(() => {
@@ -290,14 +335,6 @@
         function toggleForm() {
             alert('Sign up feature coming soon! For now, just enter your name to continue.');
         }
-
-        // Check if already logged in
-        window.addEventListener('load', () => {
-            const user = localStorage.getItem('linkedoutUser');
-            if (user) {
-                window.location.href = 'index.html';
-            }
-        });
     </script>
 </body>
 </html>
