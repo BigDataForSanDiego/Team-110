@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
         <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
         <title>LinkedOut</title>
         <!-- Leaflet CSS (load first so our styles can override) -->
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -20,15 +20,20 @@
 }
 
 *{box-sizing:border-box}
+html{
+	font-size:16px;
+}
 body{
 	font-family: 'Inter', -apple-system, system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
 	background:var(--bg);
 	color:#0f172a;
 	margin:0;
 	-webkit-font-smoothing:antialiased;
+	min-width:320px;
+	overflow-x:hidden;
 }
 
-.container{max-width:1400px;margin:0 auto;padding:16px}
+.container{max-width:1400px;margin:0 auto;padding:16px;zoom:reset}
 .app-header{background:linear-gradient(90deg, #6366f1, #4f46e5);color:white;padding:20px 0}
 .header-content{display:flex;justify-content:space-between;align-items:center}
 .app-header h1{margin:0;font-size:20px;font-weight:600}
@@ -148,21 +153,11 @@ body{
         </section>
     </div>
 
-    <!-- Auxiliary Section: Search and Mark Resource -->
+    <!-- Auxiliary Section: Mark Resource and Search -->
     <div class="auxiliary-section container">
-        <!-- Ask for Help -->
-        <div class="panel">
-            <h2>Locate Nearby Resources</h2>
-            <form id="searchForm" class="search-form">
-                <input id="searchQuery" placeholder="e.g., 'I need water' or 'Where can I eat?'" aria-label="Natural language search" />
-                <button type="submit" class="btn primary">Find Resources</button>
-            </form>
-            <div id="searchResults" class="search-results" aria-live="polite"></div>
-        </div>
-
         <!-- Mark a Resource -->
         <div class="panel">
-            <h2></h2>Mark a Resource</h2>
+            <h2>Mark a Resource</h2>
             <form id="resourceForm" class="resource-form">
                 <input id="resName" placeholder="Resource name (required)" />
                 <select id="resType">
@@ -185,6 +180,16 @@ body{
                 </div>
             </form>
             <div id="resourceMsg" class="resource-msg" aria-live="polite"></div>
+        </div>
+
+        <!-- Ask for Help -->
+        <div class="panel">
+            <h2>Ask for Help</h2>
+            <form id="searchForm" class="search-form">
+                <input id="searchQuery" placeholder="e.g., 'I need water' or 'Where can I eat?'" aria-label="Natural language search" />
+                <button type="submit" class="btn primary">Find Resources</button>
+            </form>
+            <div id="searchResults" class="search-results" aria-live="polite"></div>
         </div>
     </div>
 
