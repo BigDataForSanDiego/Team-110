@@ -5,7 +5,6 @@
         <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
         <title>LinkedOut</title>
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-        <!-- Optional icons / fonts -->
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
         <style>
 :root{
@@ -81,7 +80,6 @@ body{
 .header-user #userDisplay{color:#0f172a}
 .header-user .btn{padding:8px 14px;font-size:13px}
 
-/* Main layout: map and forum side by side */
 .main-content{
 	display:grid;
 	grid-template-columns:1fr 1fr;
@@ -92,7 +90,6 @@ body{
 	margin: 0 auto;
 }
 
-/* Map section */
 .map-section{
 	display:flex;
 	flex-direction:column;
@@ -139,7 +136,6 @@ body{
 .post-card{background:#fbfcfd;border:1px solid rgba(2,6,23,0.03);padding:12px;border-radius:8px;flex-shrink:0}
 .post-card .meta{font-size:12px;color:var(--muted);margin-bottom:6px}
 
-/* Auxiliary sections */
 .auxiliary-section{
 	display:grid;
 	grid-template-columns:1fr 1fr;
@@ -217,7 +213,7 @@ body{
     </header>
 
     <div class="main-content container">
-        <!-- Map Section -->
+    
         <section class="map-section">
             <div id="map" class="map"></div>
             <div id="mapHints" class="map-hints">

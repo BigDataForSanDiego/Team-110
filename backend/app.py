@@ -34,7 +34,6 @@ def hello():
 
 @app.route('/posts', methods=['GET'])
 def posts_list():
-    """Return list of posts (most recent last)."""
     return jsonify(models.get_posts())
 
 
@@ -62,18 +61,12 @@ def resources_list():
 
 @app.route('/resources/<resource_id>/click', methods=['POST'])
 def resource_click(resource_id):
-    """Record a click on a resource, potentially removing it if clicks exhausted."""
     exists = models.click_resource(resource_id)
     return jsonify({'exists': exists})
 
 
 @app.route('/search', methods=['POST'])
 def search_resources():
-    """
-    LLM-powered natural language search.
-    User asks in natural language (e.g., "I need water near me")
-    Returns the nearest matching resource with an address.
-    """
     data = request.get_json() or {}
     query = (data.get('query') or '').strip()
     user_lat = data.get('lat')

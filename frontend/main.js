@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
     userDisplay.textContent = `Welcome, ${user.username}!`;
   }
 
-  // Sign out handler
   const signOutBtn = document.getElementById('signOutBtn');
   if (signOutBtn) {
     signOutBtn.addEventListener('click', () => {
@@ -79,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
       const meta = document.createElement('div'); 
       meta.className='meta'; 
-      // Display username and timestamp
+
       const username = p.username || 'Anonymous';
       const timestamp = p.created_at || '';
       meta.textContent = `${username} • ${timestamp}`;
@@ -144,7 +143,6 @@ document.addEventListener('DOMContentLoaded', () => {
           const printBtn = popupNode.querySelector('.print-btn');
           if (printBtn){
             printBtn.addEventListener('click', function(){
-              // Create printable directions content
               const printContent = `
                 <html>
                 <head>
@@ -217,7 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
     })
     .then(r=>r.json())
     .then((data)=>{ 
-      console.log('Post created:', data); // Debug log
+      console.log('Post created:', data); 
       postInput.value=''; 
       fetchPosts(); 
     })
@@ -257,7 +255,6 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
           `;
           searchResults.innerHTML=html;
-          // Center map on result
           map.setView([res.lat, res.lon], 15);
         })
         .catch(err=>{ searchResults.innerHTML='<div class="search-result-card"><div class="result-detail" style="color:var(--danger);">Search failed. Try again.</div></div>'; console.error(err); });
@@ -265,7 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
 
-  // map click fills coords
+  
   map.on('click', function(e){ const lat = e.latlng.lat.toFixed(6); const lon = e.latlng.lng.toFixed(6); if (resLat) resLat.value = lat; if (resLon) resLon.value = lon; });
 
   centerMe && centerMe.addEventListener('click', ()=>{ if (!navigator.geolocation){ alert('Geolocation not supported'); return; } navigator.geolocation.getCurrentPosition(pos=>{ map.setView([pos.coords.latitude, pos.coords.longitude], 15); }, ()=>{ alert('Unable to get your location'); }); });
