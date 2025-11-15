@@ -5,12 +5,10 @@ from datetime import datetime
 import sys
 import os
 
-# Ensure backend directory is on sys.path so we can import models when running
-# from the repo root (e.g. `python backend/app.py`).
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import models
 
-# Optional: LLM integration (will gracefully degrade if no API key)
+#down the the line if we want LLM capabilities
 try:
     import openai
     LLM_AVAILABLE = True
@@ -44,7 +42,7 @@ def posts_list():
 def posts_create():
     data = request.get_json() or {}
     content = data.get('content', '').strip()
-    username = data.get('username', 'Anonymous').strip()  # Get username from request
+    username = data.get('username', 'Anonymous').strip()  
     
     if not content:
         return jsonify({'error': 'content is required'}), 400
@@ -90,7 +88,6 @@ def search_resources():
     except (TypeError, ValueError):
         return jsonify({'error': 'lat and lon must be numbers'}), 400
 
-    # Parse the query using simple heuristics (no LLM required for MVP)
     query_lower = query.lower()
     resource_type = None
     

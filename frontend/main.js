@@ -1,13 +1,10 @@
-// Single clean frontend script: adds 'Use' and 'Directions' buttons in resource popups
 document.addEventListener('DOMContentLoaded', () => {
-  // Check authentication
   const user = JSON.parse(localStorage.getItem('linkedoutUser') || 'null');
   if (!user) {
     window.location.href = 'login.html';
     return;
   }
 
-  // Display username
   const userDisplay = document.getElementById('userDisplay');
   if (userDisplay) {
     userDisplay.textContent = `Welcome, ${user.username}!`;
@@ -124,8 +121,8 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         m.bindPopup(popupHtml);
         
-        // Decrement clicks when marker is clicked
-        m.on('click', function(){
+    
+        m.on('popupclose', function(){
           if (r.id) {
             fetch(`http://127.0.0.1:5000/resources/${r.id}/click`, {method:'POST'})
               .then(res=>res.json())
@@ -192,22 +189,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }).catch(e=>console.error('resources fetch', e));
   }
 
-  // initial load and polling
+  
   fetchResources(); fetchPosts(); setInterval(fetchResources,7000); setInterval(fetchPosts,6000);
 
-  // post submit - now includes username
+  
   postForm.addEventListener('submit', e=>{ 
     e.preventDefault(); 
     const content = postInput.value && postInput.value.trim(); 
     if (!content) return; 
     
-    // Get fresh user data from localStorage
+    
     const currentUser = JSON.parse(localStorage.getItem('linkedoutUser') || 'null');
     const username = currentUser?.username || 'Anonymous';
     
     console.log('Submitting post with username:', username); // Debug log
     
-    // Include username from localStorage
+    
     const payload = {
       content: content,
       username: username
@@ -227,14 +224,13 @@ document.addEventListener('DOMContentLoaded', () => {
     .catch(e=>console.error('post create',e)); 
   });
 
-  // resource submit
   resourceForm.addEventListener('submit', e=>{
     e.preventDefault(); const payload = { name:(resName.value||'').trim(), type:(resType.value||'').trim(), notes:(resNotes.value||'').trim(), lat:parseFloat(resLat.value), lon:parseFloat(resLon.value) };
     if (!payload.name || !isFinite(payload.lat) || !isFinite(payload.lon)){ resourceMsg.textContent='Name, latitude and longitude are required and must be valid numbers.'; resourceMsg.style.color='var(--danger)'; return; }
     fetch('http://127.0.0.1:5000/resources',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).then(r=>r.json()).then(()=>{ resourceMsg.textContent='Resource marked — thanks!'; resourceMsg.style.color='inherit'; resName.value=''; resType.value=''; resNotes.value=''; resLat.value=''; resLon.value=''; fetchResources(); }).catch(e=>{ resourceMsg.textContent='Failed to mark resource'; resourceMsg.style.color='var(--danger)'; console.error(e); });
   });
 
-  // Natural language search
+  
   searchForm && searchForm.addEventListener('submit', e=>{
     e.preventDefault();
     if (!navigator.geolocation){ alert('Please enable location to use search'); return; }
