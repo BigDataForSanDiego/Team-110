@@ -17,6 +17,11 @@ Edward Huang (edward-lemonade)
 
 <img height="10%" width="50%" alt="HDMA" src="https://github.com/BigDataForSanDiego/Team-110/blob/main/images/vis.jpg?raw=true">
 
+## Demo
+
+[![GitHub Demo Video](https://img.shields.io/badge/Watch%20Demo-Video%20Walkthrough-blue?style=for-the-badge&logo=youtube)](https://youtu.be/onNQhKqMoMs)
+
+Click the badge above to watch our winners video.
 
 
 #### Hackathon Five CORE Themes. `CHECK ONE or TWO QUESTIONS (insert X in [ ])`.
